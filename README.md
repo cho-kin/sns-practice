@@ -1,2 +1,4 @@
 # sns-practice
-snsのようなものを作りたい
+
+
+created by \<template commit version\>

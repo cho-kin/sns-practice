@@ -1,0 +1,127 @@
+page-matrix-single(spat-animation='slide')
+  div.f.flex-column.h-full
+    module-header(back='{true}', title='{matrix.title}')
+      #{'yield'}(to='right')
+        div.px16.text-Light-100(onclick='{parent.toggleMode}') {parent.edit? '完了' : '編集'}
+
+    div.relative.h-full.overflow-scroll
+      div.container.s-full
+        div.relative.overflow-scroll.s-full
+          //- 縦線
+          div.absolute.trbl0.f.fh.zn1
+            div.w1.h-full.bg-deepgray
+            div.absolute.t0.b0.f.flex-column.flex-between
+              div.bg-palegray アツい
+              div.bg-palegray エモい
+          //- 横線
+          div.absolute.trbl0.f.fh  
+            div.w-full.h1.bg-deepgray
+
+
+          //- itemを追加する場所
+          div.absolute.trbl0(ref='board', onmousemove='{move}', onmouseup='{moveFinish}')
+            //- 各item
+            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(each='{item in items}', class='{"s64 border bw2 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{openDetail}', onmousedown='{moveStart}')
+              div.absolute.trbl0
+                img.block.s-full.object-fit-cover(src='{item.image}')
+                div.absolute.trbl0.bg-black_filter
+              div.relative.s-full.f.fh.z1.text-white
+                div.word-break-all.line-clamp-1.bold {item.title}
+
+      //- 追加ボタン
+      div.absolute.r0.b0.m16.circle.p8.border.box-shadow.cursor-pointer.z100(onclick='{addItem}')
+        i.material-icons.block add
+
+    module-tabbar.flex-fixed
+
+
+  style(type='less').
+    :scope {
+      display: block;
+    }
+    .item:not(.edit):hover {
+      transform: scale(1.2);
+      transition: 256ms;
+    }
+
+  script.
+    this.edit = false;
+    this.movable = false;
+
+    this.items = [
+      {
+        id: '001',
+        title: 'hoge',
+        description: '説明文',
+        image: '/static/images/dummiue/dummie001.jpg',
+        item_x: 10,
+        item_y: 100,
+      },
+      {
+        id: '002',
+        title: 'fuga',
+        description: '説明文',
+        image: '/static/images/dummiue/dummie001.jpg',
+        item_x: 100,
+        item_y: 40,
+      }
+    ];
+
+    this.on('show', async (e) => {
+      this.matrix = {
+        title: 'test01',        
+      }
+      this.update();
+    });
+
+    //- itemの追加
+    this.addItem = () => {
+      var modal = spat.modal.open('modal-add-item');
+      modal.on('add', (item) => {
+        var board = this.refs.board;
+
+        this.items.push(item);
+      });
+      console.log(this.items);
+    };
+
+    //- 移動開始のフラグ
+    this.moveStart = (e) => {
+      if (!this.edit) return;
+      this.movable = true;
+      this.selected_item = e.currentTarget;
+    };
+
+    //- マウスについて移動する
+    this.move = (e) => {
+      //- セレクトされたアイテムがなければ返す
+      if (!this.selected_item) return;
+      //- 編集モードじゃなければ戻す
+      if (!this.edit || !this.movable) return;
+      var x = e.x;
+      var y = e.y;
+      var h = this.selected_item.clientHeight;
+      var w = this.selected_item.clientWidth;
+      this.selected_item.style.left = `${(x - w)}px`;
+      this.selected_item.style.top = `${(y - h)}px`;
+    };
+
+    //- 移動終了のフラグ
+    this.moveFinish = () => {
+      if (!this.edit) return;
+      this.movable = false;
+      this.selected_item = null;
+      console.log('finish');
+    };
+    
+    //- 詳細モーダルを開く
+    this.openDetail = (e) => {
+      if (this.edit) return;
+      var modal = spat.modal.open('modal-item-detail', {item: e.item.item});
+    };
+
+    //- モード切り替え
+    this.toggleMode = () => {
+      this.edit = !this.edit;
+      this.update();
+    };

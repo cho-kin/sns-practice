@@ -4,21 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "spalate build",
+    "start": "spalate start",
+    "dev": "spalate build; spalate dev",
+
+    "deploy": "npm run build; gcloud app deploy --project $npm_package_config_stg gae_stg.yaml -q",
+    "browse": "gcloud app browse --project $npm_package_config_stg --service default",
+    "deploy:prod": "npm run build; gcloud app deploy --project $npm_package_config_prod gae_prod.yaml -q",
+    "browse:prod": "gcloud app browse --project $npm_package_config_prod --service default",
+    
+    "iconfont": "spalate iconfont",
+    "browse:icon": "open public/fonts/icons/icons-preview.html",
+
+    "test": ""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cho-kin/sns-practice.git"
+  "config": {
+    "stg": "sns-practice_stg",
+    "prod": "sns-practice_prod"
   },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/cho-kin/sns-practice/issues"
-  },
-  "homepage": "https://github.com/cho-kin/sns-practice#readme",
+  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
-    "pug": "^2.0.4"
+    "spalate": "git://github.com/phi-jp/spalate.git#4b9c558427b30341db2ded6194ad2dcebb1c1043"
   }
 }

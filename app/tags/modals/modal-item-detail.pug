@@ -1,0 +1,41 @@
+modal-item-detail.f.fh(spat-animation='bottom')
+  div.modal.bg-white.rounded-8.w-full.m8.p32(ref='modal')
+    div.mb16
+      div.mb8 画像
+      div.mb8.w-full
+        img.w-full.object-fit-contain(src='{opts.item.image}')
+    div.mb16
+      div.mb8 タイトル
+      div(if='{!isMe}') {opts.item.title}
+      input.w-full.border.p4(if='{isMe}', type='text', value='{opts.item.title}')
+    div.mb16
+      div.mb8 説明文
+      div(if='{!isMe}') {opts.item.description}
+      textarea.w-full.border.p4(if='{isMe}', value='{opts.item.description}')
+    div.f.fh
+      button.button.w-full.bg-danger.mr16.text-white.bold(onclick='{delete}') 削除
+      button.button.w-full.bold(onclick='{edir}') 編集
+
+  style(type='less').
+    :scope {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+  script.
+    this.on('mount', (e) => {
+      this.isMe = true;
+    });
+
+    //- 編集ボタン
+    this.edit = () => {
+      spat.toast.message('編集');
+      this.close();
+    };
+
+    //- 削除ボタン
+    this.delete = () => {
+      spat.modal.confirm('削除しますか？').one('confirm', () => {
+        spat.toast.message('削除しました');
+        this.close();
+      });
+    };
