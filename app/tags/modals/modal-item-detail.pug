@@ -1,0 +1,52 @@
+modal-item-detail.f.fh(spat-animation='bottom')
+  div.modal.bg-white.rounded-8.w-full.m8.p32(ref='modal')
+    div.mb16
+      div.mb8 画像
+      atom-input-file.mb8.s-full(onchange='{changeImage}')
+        img.s-full.object-fit-contain(ref='image', src='{parent.data.image}')
+    div.mb16
+      div.mb8 タイトル
+      div(if='{!isMe}') {data.title}
+      input.w-full.border.p4(if='{isMe}', ref='title', type='text', value='{data.title}')
+    div.mb16
+      div.mb8 説明文
+      div(if='{!isMe}') {data.description}
+      textarea.w-full.border.p4(if='{isMe}', ref='description', value='{data.description}')
+    div.f.fh
+      button.button.w-full.bg-danger.mr16.text-white.bold(onclick='{delete}') 削除
+      button.button.w-full.bold(onclick='{edit}') 編集
+
+  style(type='less').
+    :scope {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+  script.
+    this.on('mount', () => {
+      this.data = this.opts.item;
+      this.isMe = true;
+    });
+
+    //- 編集ボタン
+    this.edit = () => {
+      this.data.title = this.refs.title.value;
+      this.data.description = this.refs.description.value;
+
+      spat.toast.message('編集');
+      this.trigger('edit', this.data);
+      this.close();
+    };
+
+    //- 削除ボタン
+    this.delete = () => {
+      spat.modal.confirm('削除しますか？').one('confirm', () => {
+        spat.toast.message('削除しました');
+        this.close();
+      });
+    };
+
+    //- 画像の変更を画面に反映
+    this.changeImage = (e) => {
+      this.data.image = e.items.urls[0];
+      this.update();
+    };

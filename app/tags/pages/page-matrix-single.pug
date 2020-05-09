@@ -1,0 +1,149 @@
+page-matrix-single(spat-animation='slide')
+  div.f.flex-column.h-full
+    module-header(back='{true}', title='{matrix.title}')
+      #{'yield'}(to='right')
+        div.px16.text-Light-100(onclick='{parent.toggleMode}') {parent.edit? '完了' : '編集'}
+
+    div.relative.h-full.overflow-scroll
+      div.container.s-full
+        div.relative.overflow-scroll.s-full
+
+          //- 軸線と項目名
+          div.absolute.trbl0.f.fh(each='{axis in axes}', class='{axis.vector==="x" ?  "px50" : "py16"}')
+            div.absolute.f.flex-between.fm(class='{axis.vector==="x" ?  "trbl0 fm flex-row-reverse" : "t0 b0 flex-column"}')
+              //- 高い方
+              div.bold(if='{!edit}') {axis.high}
+              input.high.input.w64.bg-palegray.z2(if='{edit}', ref='axis', value='{axis.high}', onfocusout='{changeInput}')
+              //- 線
+              div.bg-deepgray(class='{axis.vector==="x" ?  "w-full h1" : "w1 h-full"}')
+              //- 低い方
+              div.bold(if='{!edit}') {axis.low}
+              input.low.input.w64.bg-palegray.z2(if='{edit}', ref='axis', value='{axis.low}', onfocusout='{changeInput}')              
+              
+
+          //- itemを追加する場所
+          div.absolute.trbl0(ref='board', onmousemove='{move}', onmouseup='{moveFinish}')
+            //- 各item
+            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(data-is='item-matrix-box', each='{item in items}', item='{item}', class='{"border bw3 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{parent.openDetail}', onmousedown='{parent.moveStart}')
+
+      //- 追加ボタン
+      div.absolute.r0.b0.m16.circle.p8.border.box-shadow.cursor-pointer.z100(onclick='{addItem}')
+        i.material-icons.block add
+
+    module-tabbar.flex-fixed
+
+
+  style(type='less').
+    :scope {
+      display: block;
+    }
+    .item:not(.edit):hover {
+      transform: scale(1.2);
+      transition: 256ms;
+    }
+
+  script.
+    this.edit = false;
+    this.movable = false;
+
+    this.axes = [
+      { vector: 'x',
+        low: 'しょぼい',
+        high: 'すごい',
+      },
+      {
+        vector: 'y',
+        low: 'アツい',
+        high: 'エモい',
+      }
+    ];
+
+    this.items = [
+      {
+        id: '001',
+        title: 'hoge',
+        description: '説明文',
+        image: '/static/images/dummiue/dummie001.jpg',
+        item_x: 10,
+        item_y: 100,
+      },
+      {
+        id: '002',
+        title: 'fuga',
+        description: '説明文',
+        image: '/static/images/dummiue/dummie001.jpg',
+        item_x: 100,
+        item_y: 40,
+      }
+    ];
+
+    this.on('show', async (e) => {
+      this.matrix = {
+        title: 'test01',        
+      }
+      this.update();
+    });
+
+    //- itemの追加
+    this.addItem = () => {
+      var modal = spat.modal.open('modal-add-item');
+      modal.on('add', (item) => {
+        var board = this.refs.board;
+
+        this.items.push(item);
+      });
+      console.log(this.items);
+    };
+
+    //- 移動開始のフラグ
+    this.moveStart = (e) => {
+      if (!this.edit) return;
+      this.movable = true;
+      this.selected_item = e.currentTarget;
+    };
+
+    //- マウスについて移動する
+    this.move = (e) => {
+      //- セレクトされたアイテムがなければ返す
+      if (!this.selected_item) return;
+      //- 編集モードじゃなければ戻す
+      if (!this.edit || !this.movable) return;
+      var x = e.x;
+      var y = e.y;
+      var h = this.selected_item.clientHeight;
+      var w = this.selected_item.clientWidth;
+      this.selected_item.style.left = `${(x - w)}px`;
+      this.selected_item.style.top = `${(y - h)}px`;
+    };
+
+    //- 移動終了のフラグ
+    this.moveFinish = () => {
+      if (!this.edit) return;
+      this.movable = false;
+      this.selected_item = null;
+      console.log('finish');
+    };
+    
+    //- 詳細モーダルを開く
+    this.openDetail = (e) => {
+      if (this.edit) return;
+      var item = e.item.item
+      var modal = spat.modal.open('modal-item-detail', {item: item});
+      modal.on('edit', data => {
+        e.item.item = data;
+        this.update();
+      });
+    };
+
+    //- モード切り替え
+    this.toggleMode = () => {
+      this.edit = !this.edit;
+      this.update();
+    };
+
+    //- 軸の項目名の変更
+    this.changeInput = (e) => {
+      var type = e.currentTarget.classList[0];
+      e.item.axis[type] = e.currentTarget.value;
+      this.update();
+    };

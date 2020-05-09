@@ -1,0 +1,52 @@
+atom-input-file(onclick='{click}')
+  #{'yield'}
+
+  style(type='less').
+    :scope {
+      display: block;
+    }
+
+  script.
+    var imageInput = document.createElement('input');
+    imageInput.setAttribute('type', 'file');
+    imageInput.setAttribute('accept', 'image/*');
+
+    this.click = () => {
+      if (opts.readonly) return;
+      
+      imageInput.click();
+    };
+
+    imageInput.onchange = (e) => {
+      this.trigger('oninput');
+      this.selectFile(e.target.files[0]);
+      $(imageInput).val("");
+    };
+
+    this.root.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+    this.root.addEventListener('dragenter', (e) => { e.preventDefault(); e.stopPropagation(); });
+    this.root.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.trigger('oninput');
+
+      this.selectFile(e.dataTransfer.files[0]);
+    });
+
+    this.selectFile = async (file) => {
+      this.images = [];
+      var file_data = await app.utils.loadImage(file);
+      var base64 = await app.utils.imageToBase64(file_data);
+      this.image = base64;
+      this.images.push(this.image);
+
+      // onchange function があれば実行
+      if (this.opts.onchange && typeof this.opts.onchange === 'function') {
+        this.opts.onchange({
+          items: {file: file, urls: this.images},
+          tag: this,
+        });
+      };
+      this.trigger('select', {file: file, urls: this.images});
+    };

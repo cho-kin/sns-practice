@@ -1,0 +1,32 @@
+modal-add-item.f.fh(spat-animation='bottom')
+  div.modal.bg-white.rounded-8.w-full.m8.p32(ref='modal')
+    div.mb8.text-center.bold.fs16 項目を追加する
+    form(onsubmit='{submit}')
+      div.f.flex-column.mb16
+        div.mb16(each='{item in items}')
+          div.mb4 {item.title}
+          input.border.p4.w-full(type='text', placeholder='{item.title}')
+      div.f.fh
+        button.button 追加
+        
+  style(type='less').
+    :scope {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+  script.
+    this.items = [
+      {label: 'title', title: 'タイトル', description: '説明文です'},
+      {label: 'description', title: '説明', description: '説明文です'},
+      {label: 'image', title: '画像', description: '説明文です'},
+    ];
+
+    this.submit = (e) => {
+      e.preventDefault();
+      this.trigger('add', {
+        title: 'hoge',
+        description: 'fuga',
+        image: 'piyo',
+      });
+      this.close();
+    };
