@@ -21,12 +21,7 @@ page-matrix-single(spat-animation='slide')
           //- itemを追加する場所
           div.absolute.trbl0(ref='board', onmousemove='{move}', onmouseup='{moveFinish}')
             //- 各item
-            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(each='{item in items}', class='{"s64 border bw2 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{openDetail}', onmousedown='{moveStart}')
-              div.absolute.trbl0
-                img.block.s-full.object-fit-cover(src='{item.image}')
-                div.absolute.trbl0.bg-black_filter
-              div.relative.s-full.f.fh.z1.text-white
-                div.word-break-all.line-clamp-1.bold {item.title}
+            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(data-is='item-matrix-box', each='{item in items}', item='{item}', class='{"s64 border bw2 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{parent.openDetail}', onmousedown='{parent.moveStart}')
 
       //- 追加ボタン
       div.absolute.r0.b0.m16.circle.p8.border.box-shadow.cursor-pointer.z100(onclick='{addItem}')
@@ -117,7 +112,12 @@ page-matrix-single(spat-animation='slide')
     //- 詳細モーダルを開く
     this.openDetail = (e) => {
       if (this.edit) return;
-      var modal = spat.modal.open('modal-item-detail', {item: e.item.item});
+      var item = e.item.item
+      var modal = spat.modal.open('modal-item-detail', {item: item});
+      modal.on('edit', data => {
+        e.item.item = data;
+        this.update();
+      });
     };
 
     //- モード切り替え

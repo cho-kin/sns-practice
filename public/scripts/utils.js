@@ -22,6 +22,15 @@
     uploadFile: () => {
   
     },
+    loadImage: async (file) => {
+      return new Promise(resolve => {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          resolve(e.target.result);
+        }
+        reader.readAsDataURL(file);
+      })
+    },
 
     // 登録/ログインを表示
     openAuthModal() {
