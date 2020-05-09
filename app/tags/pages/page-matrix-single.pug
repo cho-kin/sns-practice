@@ -7,21 +7,24 @@ page-matrix-single(spat-animation='slide')
     div.relative.h-full.overflow-scroll
       div.container.s-full
         div.relative.overflow-scroll.s-full
-          //- 縦線
-          div.absolute.trbl0.f.fh.zn1
-            div.w1.h-full.bg-deepgray
-            div.absolute.t0.b0.f.flex-column.flex-between
-              div.bg-palegray アツい
-              div.bg-palegray エモい
-          //- 横線
-          div.absolute.trbl0.f.fh  
-            div.w-full.h1.bg-deepgray
 
+          //- 軸線と項目名
+          div.absolute.trbl0.f.fh(each='{axis in axes}', class='{axis.vector==="x" ?  "px50" : "py16"}')
+            div.absolute.f.flex-between.fm(class='{axis.vector==="x" ?  "trbl0 fm flex-row-reverse" : "t0 b0 flex-column"}')
+              //- 高い方
+              div.bold(if='{!edit}') {axis.high}
+              input.high.input.w64.bg-palegray.z2(if='{edit}', ref='axis', value='{axis.high}', onfocusout='{changeInput}')
+              //- 線
+              div.bg-deepgray(class='{axis.vector==="x" ?  "w-full h1" : "w1 h-full"}')
+              //- 低い方
+              div.bold(if='{!edit}') {axis.low}
+              input.low.input.w64.bg-palegray.z2(if='{edit}', ref='axis', value='{axis.low}', onfocusout='{changeInput}')              
+              
 
           //- itemを追加する場所
           div.absolute.trbl0(ref='board', onmousemove='{move}', onmouseup='{moveFinish}')
             //- 各item
-            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(data-is='item-matrix-box', each='{item in items}', item='{item}', class='{"s64 border bw2 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{parent.openDetail}', onmousedown='{parent.moveStart}')
+            div.item.absolute.s64.rounded-6.overflow-hidden.cursor-pointer(data-is='item-matrix-box', each='{item in items}', item='{item}', class='{"border bw3 border-primary z10 box-shadow": item.id===selected_item._tag.item.id} {"edit": edit}', style='top: {item.item_y}px; left: {item.item_x}px;', onclick='{parent.openDetail}', onmousedown='{parent.moveStart}')
 
       //- 追加ボタン
       div.absolute.r0.b0.m16.circle.p8.border.box-shadow.cursor-pointer.z100(onclick='{addItem}')
@@ -42,6 +45,18 @@ page-matrix-single(spat-animation='slide')
   script.
     this.edit = false;
     this.movable = false;
+
+    this.axes = [
+      { vector: 'x',
+        low: 'しょぼい',
+        high: 'すごい',
+      },
+      {
+        vector: 'y',
+        low: 'アツい',
+        high: 'エモい',
+      }
+    ];
 
     this.items = [
       {
@@ -123,5 +138,12 @@ page-matrix-single(spat-animation='slide')
     //- モード切り替え
     this.toggleMode = () => {
       this.edit = !this.edit;
+      this.update();
+    };
+
+    //- 軸の項目名の変更
+    this.changeInput = (e) => {
+      var type = e.currentTarget.classList[0];
+      e.item.axis[type] = e.currentTarget.value;
       this.update();
     };
