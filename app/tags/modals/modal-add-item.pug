@@ -3,9 +3,16 @@ modal-add-item.f.fh(spat-animation='bottom')
     div.mb8.text-center.bold.fs16 項目を追加する
     form(onsubmit='{submit}')
       div.f.flex-column.mb16
-        div.mb16(each='{item in items}')
-          div.mb4 {item.title}
-          input.border.p4.w-full(type='text', placeholder='{item.title}')
+        div.mb16
+          div.mb4 画像
+          atom-input-file.mb8.s256.bg-white.mxa(ref='image', onchange='{changeImage}')
+            img.s-full.max-w.object-fit-contain(src='https://placehold.jp/200x200.png')
+        div.mb16
+          div.mb4 タイトル
+          input.border.p4.w-full(ref='title', type='text', placeholder='タイトル')
+        div.mb16
+          div.mb4 説明文
+          textarea.border.p4.w-full(ref='description', rows="4")
       div.f.fh
         button.button 追加
         
@@ -15,18 +22,21 @@ modal-add-item.f.fh(spat-animation='bottom')
     }
 
   script.
-    this.items = [
-      {label: 'title', title: 'タイトル', description: '説明文です'},
-      {label: 'description', title: '説明', description: '説明文です'},
-      {label: 'image', title: '画像', description: '説明文です'},
-    ];
-
     this.submit = (e) => {
       e.preventDefault();
       this.trigger('add', {
-        title: 'hoge',
-        description: 'fuga',
-        image: 'piyo',
+        id: '001',
+        title: this.refs.title.value,
+        description: this.refs.description.value,
+        image: this.refs.image.root.children[0].src,
+        item_x: 0,
+        item_y: 0,
       });
       this.close();
+    };
+
+    //- 画像の変更を画面に反映
+    this.changeImage = (e) => {
+      this.refs.image.root.children[0].src = e.items.urls[0];
+      this.update();
     };

@@ -88,11 +88,8 @@ page-matrix-single(spat-animation='slide')
     this.addItem = () => {
       var modal = spat.modal.open('modal-add-item');
       modal.on('add', (item) => {
-        var board = this.refs.board;
-
         this.items.push(item);
       });
-      console.log(this.items);
     };
 
     //- 移動開始のフラグ

@@ -2,7 +2,7 @@ modal-item-detail.f.fh(spat-animation='bottom')
   div.modal.bg-white.rounded-8.w-full.m8.p32.max-w800(ref='modal')
     div.mb16
       div.mb8 画像
-      atom-input-file.mb8.s-full(onchange='{changeImage}')
+      atom-input-file.mb8.s-full.f.fh(onchange='{changeImage}')
         img.s-full.max-w512.object-fit-contain(ref='image', src='{parent.data.image}')
     div.mb16
       div.mb8 タイトル
