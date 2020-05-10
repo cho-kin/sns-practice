@@ -1,0 +1,20 @@
+service: default
+runtime: nodejs10
+automatic_scaling:
+  min_instances: 1
+  max_instances: 1
+env_variables:
+  NODE_ENV: 'development'
+handlers:
+  - url: /fonts
+    static_dir: public/fonts
+  - url: /images
+    static_dir: public/images
+  - url: /plugins
+    static_dir: public/plugins
+  - url: /scripts
+    static_dir: public/scripts
+  - url: /se
+    static_dir: public/se
+  - url: /styles
+    static_dir: public/styles

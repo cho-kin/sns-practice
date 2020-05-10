@@ -19,8 +19,8 @@
     "test": ""
   },
   "config": {
-    "stg": "sns-practice_stg",
-    "prod": "sns-practice_prod"
+    "stg": "fine-harbor-247717",
+    "prod": "fine-harbor-247717"
   },
   "author": "",
   "license": "MIT",

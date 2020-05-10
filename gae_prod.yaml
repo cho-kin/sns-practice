@@ -1,0 +1,27 @@
+service: default
+runtime: nodejs10
+instance_class: F2
+automatic_scaling:
+  target_cpu_utilization: 0.75
+  target_throughput_utilization: 0.75
+  min_idle_instances: 0
+  min_instances: 0
+  max_concurrent_requests: 80
+env_variables:
+  NODE_ENV: 'production'
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+  - url: /fonts
+    static_dir: public/fonts
+  - url: /images
+    static_dir: public/images
+  - url: /plugins
+    static_dir: public/plugins
+  - url: /scripts
+    static_dir: public/scripts
+  - url: /se
+    static_dir: public/se
+  - url: /styles
+    static_dir: public/styles
